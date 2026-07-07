@@ -11,7 +11,7 @@ describe('theme registry', () => {
     for (const t of getThemes()) {
       expect(t.id).toBeTruthy();
       expect(t.name).toBeTruthy();
-      expect(t.base.fontFamily).toContain('PingFang SC');
+      expect(t.base.fontFamily).toMatch(/PingFang SC|Microsoft YaHei|Songti SC|Noto Serif SC/);
       expect(t.base.fontSize).toMatch(/px$/);
       expect(t.heading.h1).toBeDefined();
       expect(t.heading.h2).toBeDefined();

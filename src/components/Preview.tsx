@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { getThemeSafe } from '../themes/registry';
+import { getPlatform } from '../platforms';
 import { exportDocument, getPlainText, copyRichText } from '../export';
 import type { PMNode } from '../export/serializer';
 
@@ -18,7 +19,8 @@ export function Preview() {
   const copy = async () => {
     if (!doc) return;
     const ok = await copyRichText(html, getPlainText(doc));
-    setStatus(ok ? '已复制，去公众号粘贴吧！' : '复制失败，请手动复制。');
+    const name = getPlatform(platform)?.name ?? '目标平台';
+    setStatus(ok ? `已复制，去「${name}」粘贴吧！` : '复制失败，请手动复制。');
     setTimeout(() => setStatus(''), 2500);
   };
 

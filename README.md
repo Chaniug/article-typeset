@@ -2,14 +2,15 @@
 
 开源、纯前端的文章排版工具。把杂乱的草稿一键变成精美排版，直接复制到**微信公众号**、**小红书**、**哔哩哔哩**、**百家号**等平台。
 
-> 当前 MVP 已实现：**微信公众号**全流程（编辑 → 导入 → 套主题 → 复制）。小红书 / B站 / 百家号为后续迭代，引擎已预留扩展点。
+> 已支持四大平台：**微信公众号**、**小红书**、**哔哩哔哩**、**百家号**。内置 14 套「一键套用」模板，覆盖极简、暗黑、国潮、多巴胺、ins 甜美等多种视觉风格。
 
 ## ✨ 特性
 
-- 🎨 **多套精美主题**：极简浅色、优雅暗色、卡片资讯等，覆盖不同行业与风格。
+- 🎨 **14 套视觉模板，一键套用**：晚霞渐变、霓虹暗黑、ins 甜美、墨韵 Editorial、国潮、糖果色、多巴胺、极简有力、B 站粉、科技蓝、资讯蓝、清新绿……强视觉冲击、吸睛可读。
+- 📱 **四平台排版**：微信公众号 / 小红书 / 哔哩哔哩 / 百家号，各平台独立模板库与宽度约束，切换即见对应风格。
 - ✂️ **四种导入方式**：直接粘贴 / Markdown / Word(.docx) / 文章链接。
 - 🧱 **富文本编辑**：标题、列表、引用、卡片、引用框、图片框、分隔线等块级组件。
-- 📋 **一键复制**：导出**全内联样式**的 HTML，粘贴进公众号编辑器即完美还原（微信会剥离 `<style>`/`class`，本工具从序列化阶段就内联，零兼容问题）。
+- 📋 **一键复制**：导出**全内联样式**的 HTML，粘贴进各平台编辑器即完美还原（微信会剥离 `<style>`/`class`，本工具从序列化阶段就内联，零兼容问题）。
 - 🆓 **纯前端、可自托管**：无强制后端；链接导入为可选 Cloudflare Worker。
 - 🤝 **主题即数据**：新增一套排版只需写一个 TS/JSON 主题文件，欢迎 PR。
 
@@ -24,17 +25,15 @@ npm run dev
 
 打开终端提示的本地地址即可使用。
 
-## 🌐 部署到 Cloudflare Pages
+## 🌐 部署
 
-源仓库托管在 GitHub，静态站点部署到 Cloudflare Pages，并绑定你自己的 CF 域名。
+本项目已通过 **GitHub Pages** 自动部署（push 到 `main` 即触发构建发布）。默认地址 `https://<user>.github.io/article-typeset/`，可在仓库 Settings → Pages 绑定你自己的域名。
 
-1. 在 Cloudflare Pages 控制台「Create from Git」连接本仓库。
-2. 构建设置：
-   - **Build command**：`npm run build`
-   - **Output directory**：`dist`
-   - **Node 版本**：20（可在 Pages 设置或 `package.json` 的 `engines` 中指定）
-3. 部署完成后，在「Custom domains」添加你的 CF 域名（如 `typeset.example.com`），自动签发 HTTPS 证书。
-4. （可选）文章链接导入需要一个 CORS 代理，见 [`worker/README.md`](worker/README.md)。
+如需改用 **Cloudflare Pages** 或自定义域名，详见 [docs/deployment.md](docs/deployment.md)。
+
+```bash
+npm run build   # 产物输出到 dist/
+```
 
 更详细说明见 [docs/deployment.md](docs/deployment.md)。
 

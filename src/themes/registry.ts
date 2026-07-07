@@ -1,7 +1,15 @@
 import { Theme } from './types';
-import { minimalLight, elegantDark, newsCard } from './wechat';
+import { wechatThemes } from './wechat';
+import { xiaohongshuThemes } from './xiaohongshu';
+import { bilibiliThemes } from './bilibili';
+import { baijiahaoThemes } from './baijiahao';
 
-const themes: Theme[] = [minimalLight, elegantDark, newsCard];
+const themes: Theme[] = [
+  ...wechatThemes,
+  ...xiaohongshuThemes,
+  ...bilibiliThemes,
+  ...baijiahaoThemes,
+];
 
 export function getThemes(platform?: string): Theme[] {
   if (!platform) return themes;

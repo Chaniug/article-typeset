@@ -1,3 +1,18 @@
-export { minimalLight } from './minimal-light';
-export { elegantDark } from './elegant-dark';
-export { newsCard } from './news-card';
+import { minimalLight } from './minimal-light';
+import { elegantDark } from './elegant-dark';
+import { newsCard } from './news-card';
+import { gradientSunset, neonDark, insPink, inkEditorial, guochao } from './striking';
+import type { Theme } from '../types';
+
+export { minimalLight, elegantDark, newsCard, gradientSunset, neonDark, insPink, inkEditorial, guochao };
+
+export const wechatThemes: Theme[] = [
+  minimalLight,
+  elegantDark,
+  newsCard,
+  gradientSunset,
+  neonDark,
+  insPink,
+  inkEditorial,
+  guochao,
+];

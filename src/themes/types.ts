@@ -38,12 +38,14 @@ export interface BlockStyle {
   paddingLeft?: string;
   paddingBottom?: string;
   textAlign?: 'left' | 'center' | 'right' | 'justify';
+  display?: string;
   letterSpacing?: string;
   background?: string;
   borderLeft?: string;
   borderRight?: string;
   borderTop?: string;
   borderBottom?: string;
+  border?: string;
   borderRadius?: string;
   textIndent?: string;
 }

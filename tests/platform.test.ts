@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { exportDocument } from '../src/export';
-import { getTheme } from '../src/themes/registry';
+import { getTheme, getThemes } from '../src/themes/registry';
+import { platforms } from '../src/platforms';
 import type { PMNode } from '../src/export/serializer';
 
 const doc: PMNode = {
@@ -38,3 +39,29 @@ describe('wechat export', () => {
     expect(html2).not.toContain('http://example.com/a.png');
   });
 });
+
+describe('所有已启用平台导出均为内联（section 包裹、零 class/style/script）', () => {
+  for (const p of platforms.filter((x) => x.enabled)) {
+    it(`${p.id} 导出合规`, () => {
+      const theme = getThemes(p.id)[0];
+      expect(theme, `${p.id} 应有模板`).toBeTruthy();
+      const html = exportDocument(doc, theme, p.id as any);
+      expect(html.startsWith('<section')).toBe(true);
+      expect(html).not.toMatch(/\sclass=/);
+      expect(html).not.toMatch(/<style/i);
+      expect(html).not.toMatch(/<script/i);
+    });
+  }
+});
+
+describe('模板库完整性', () => {
+  it('每个平台都有模板且 id 唯一', () => {
+    const all = getThemes();
+    const ids = all.map((t) => t.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const p of platforms) {
+      expect(getThemes(p.id).length).toBeGreaterThan(0);
+    }
+  });
+});
+

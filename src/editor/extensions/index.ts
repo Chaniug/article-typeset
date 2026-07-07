@@ -23,21 +23,103 @@ export function buildExtensions(): Extensions {
   ];
 }
 
+const SAMPLE_IMG =
+  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='600'%20height='300'%3E%3Crect%20width='600'%20height='300'%20fill='%23ffe3ec'/%3E%3Ctext%20x='50%25'%20y='50%25'%20font-family='sans-serif'%20font-size='28'%20text-anchor='middle'%20dominant-baseline='middle'%20fill='%23ff5d8f'%3ESample%20Image%3C/text%3E%3C/svg%3E";
+
 export const initialContent = {
   type: 'doc',
   content: [
     {
       type: 'heading',
-      attrs: { level: 2 },
-      content: [{ type: 'text', text: '欢迎使用文章排版工具' }],
+      attrs: { level: 1 },
+      content: [{ type: 'text', text: '🎯 一键排版，惊艳上线' }],
     },
     {
       type: 'paragraph',
       content: [
         {
           type: 'text',
-          text: '在左侧导入或在此直接撰写，右侧选择主题并一键复制到公众号。',
+          text: '选一个模板，粘贴你的内容，点一下就能把文章变成吸睛的版面。',
         },
+      ],
+    },
+    {
+      type: 'heading',
+      attrs: { level: 2 },
+      content: [{ type: 'text', text: '为什么好排版这么重要' }],
+    },
+    {
+      type: 'paragraph',
+      content: [
+        {
+          type: 'text',
+          text: '好的排版能提升读者的读完率与信任感——内容再好，也需要被「看见」。',
+        },
+      ],
+    },
+    {
+      type: 'quoteBox',
+      attrs: { text: '排版不是装饰，而是内容呼吸的节奏。' },
+    },
+    {
+      type: 'heading',
+      attrs: { level: 2 },
+      content: [{ type: 'text', text: '三步搞定' }],
+    },
+    {
+      type: 'bulletList',
+      content: [
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: '左侧导入或粘贴你的内容' }],
+            },
+          ],
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: '右侧挑选喜欢的模板，一键套用' }],
+            },
+          ],
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                { type: 'text', text: '点「复制排版」，粘到公众号 / 小红书 / B站' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'divider',
+    },
+    {
+      type: 'card',
+      attrs: { title: '💡 小贴士', body: '切换平台按钮，即可看到对应平台的模板库。' },
+    },
+    {
+      type: 'imageFrame',
+      attrs: { src: SAMPLE_IMG, alt: '示例图片', caption: '图：示意配图' },
+    },
+    {
+      type: 'heading',
+      attrs: { level: 3 },
+      content: [{ type: 'text', text: '现在就试试' }],
+    },
+    {
+      type: 'paragraph',
+      content: [
+        { type: 'text', text: '换几个模板看看效果，总有一款击中你的读者。' },
       ],
     },
   ],

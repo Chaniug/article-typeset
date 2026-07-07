@@ -27,26 +27,29 @@ export const wechat: PlatformConstraint = {
 export const xiaohongshu: PlatformConstraint = {
   id: 'xiaohongshu',
   name: '小红书',
-  description: 'emoji 标题、色块、分隔，纯文本友好。',
+  description: 'emoji 标题、色块、分隔，活泼吸睛，适配手机窄屏。',
+  maxWidth: '460px',
   inlineOnly: true,
   supportsCustomCss: false,
-  enabled: false,
+  enabled: true,
 };
 
 export const bilibili: PlatformConstraint = {
   id: 'bilibili',
   name: '哔哩哔哩',
-  description: '专栏文章排版，约束类似微信但更宽松。',
+  description: 'B 站专栏图文排版，约束类似微信但更宽松，支持彩色块。',
+  maxWidth: '720px',
   inlineOnly: true,
   supportsCustomCss: false,
-  enabled: false,
+  enabled: true,
 };
 
 export const baijiahao: PlatformConstraint = {
   id: 'baijiahao',
   name: '百家号',
-  description: '自媒体图文排版。',
+  description: '百家号自媒体图文排版，资讯/清新双风格。',
+  maxWidth: '680px',
   inlineOnly: true,
   supportsCustomCss: false,
-  enabled: false,
+  enabled: true,
 };
