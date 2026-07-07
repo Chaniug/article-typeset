@@ -1,0 +1,59 @@
+{
+  "name": "article-typeset",
+  "version": "0.1.0",
+  "description": "开源、纯前端的文章排版工具：微信公众号 / 小红书 / 自媒体一键排版。",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/article-typeset.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "@tiptap/extension-image": "^2.6.6",
+    "@tiptap/extension-link": "^2.6.6",
+    "@tiptap/extension-placeholder": "^2.6.6",
+    "@tiptap/extension-underline": "^2.27.2",
+    "@tiptap/pm": "^2.6.6",
+    "@tiptap/react": "^2.6.6",
+    "@tiptap/starter-kit": "^2.6.6",
+    "clsx": "^2.1.1",
+    "dompurify": "^3.1.7",
+    "mammoth": "^1.8.0",
+    "marked": "^13.0.3",
+    "nanoid": "^5.0.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/node": "^20.16.10",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2"
+  }
+}
