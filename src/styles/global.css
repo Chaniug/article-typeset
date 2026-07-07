@@ -264,6 +264,47 @@ button {
   margin-top: 2px;
 }
 
+/* 行业分类筛选栏（仅微信平台显示） */
+.theme-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.theme-filter__chip {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  transition: all 0.15s ease;
+}
+
+.theme-filter__chip:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.theme-filter__chip--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.theme-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-empty {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 16px 0;
+  text-align: center;
+}
+
 /* ---------- Preview ---------- */
 .preview {
   display: flex;

@@ -4,6 +4,7 @@ import { elegantDark } from './elegant-dark';
 import { newsCard } from './news-card';
 import { gradientSunset, neonDark, insPink, inkEditorial, guochao } from './striking';
 import { premiumWechatThemes } from './premium';
+import { categoryWechatThemes } from './categories';
 
 export const wechatThemes: Theme[] = [
   minimalLight,
@@ -15,4 +16,5 @@ export const wechatThemes: Theme[] = [
   inkEditorial,
   guochao,
   ...premiumWechatThemes,
+  ...categoryWechatThemes,
 ];
