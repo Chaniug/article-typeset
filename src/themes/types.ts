@@ -26,7 +26,10 @@ export interface TypographyTokens {
   space: string;
 }
 
-/** 标题装饰变体：plain 普通 / block 色块 / pill 药丸 / bar 竖线 / number 编号 / underline 下划线 / gradient 渐变文字 */
+/** 标题装饰变体：
+ * plain 普通 / block 色块 / pill 药丸 / bar 竖线 / number 编号 / underline 下划线 / gradient 渐变文字
+ * layered 层叠（超大淡色底纹 + 小标题叠放）/ display 超大锚点（大号英文/数字 + 小标题）
+ * vertical 竖排 / stroke 描边镂空 / serif 衬线文艺 */
 export type HeadingVariant =
   | 'plain'
   | 'block'
@@ -34,7 +37,12 @@ export type HeadingVariant =
   | 'bar'
   | 'number'
   | 'underline'
-  | 'gradient';
+  | 'gradient'
+  | 'layered'
+  | 'display'
+  | 'vertical'
+  | 'stroke'
+  | 'serif';
 
 export interface BlockStyle {
   fontSize?: string;
@@ -73,6 +81,22 @@ export interface BlockStyle {
   gradientTo?: string;
   /** 文字阴影，用于霓虹/发光标题 */
   textShadow?: string;
+  /** 标题字体（覆盖主题正文字体，用于衬线/艺术字搭配） */
+  fontFamily?: string;
+  /** 层叠/超大锚点变体的大号底纹文字（如 '01'、'CHAPTER'） */
+  decorText?: string;
+  /** 底纹文字字体（默认衬线英文，营造杂志感） */
+  decorFont?: string;
+  /** 底纹文字颜色（默认半透明，如 'rgba(0,0,0,.06)'） */
+  decorColor?: string;
+  /** 底纹文字字号（默认 '64px'） */
+  decorSize?: string;
+  /** 底纹对齐：left / right / center（层叠变体生效） */
+  decorAlign?: 'left' | 'right' | 'center';
+  /** 层叠底纹上偏移（负值向上叠，如 '-0.35em'） */
+  decorTop?: string;
+  /** 描边镂空标题的描边宽度（默认 '1.5px'） */
+  strokeWidth?: string;
 }
 
 export interface DividerStyle {

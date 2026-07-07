@@ -16,6 +16,9 @@ import {
 } from '../themes/compiler';
 import { escapeHtml, escapeAttr, toInlineStyle, getNodeText } from '../lib/utils';
 
+/** 英文衬线（用于层叠/超大锚点的装饰底纹，营造杂志感）。 */
+const SERIF_EN = "Georgia,'Times New Roman',serif";
+
 export interface PMMark {
   type: string;
   attrs?: Record<string, any>;
@@ -99,6 +102,7 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
     textAlign: s.textAlign,
     letterSpacing: s.letterSpacing,
     margin: s.margin,
+    fontFamily: s.fontFamily,
   });
 
   if (variant === 'plain') {
@@ -117,6 +121,7 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
       marginBottom: s.marginBottom,
       textAlign: s.textAlign,
       letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
       borderLeft: s.borderLeft ?? `4px solid ${accent}`,
       paddingLeft: s.paddingLeft ?? '12px',
     });
@@ -133,6 +138,7 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
       marginBottom: s.marginBottom,
       textAlign: s.textAlign,
       letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
       borderBottom: s.borderBottom ?? `3px solid ${accent}`,
       paddingBottom: s.paddingBottom ?? '6px',
       display: s.display ?? 'inline-block',
@@ -174,6 +180,155 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
     return `<${tag} style="${wrap}"><span style="${badge}">${num}</span>${inner}</${tag}>`;
   }
 
+  // —— 层叠标题（叠放）：超大半透明底纹垫底，小标题叠在其上产生纵深 ——
+  if (variant === 'layered') {
+    const decor = s.decorText ?? '01';
+    const decorSize = s.decorSize ?? '64px';
+    const decorColor = s.decorColor ?? 'rgba(0,0,0,.07)';
+    const backStyle = toInlineStyle({
+      position: 'absolute',
+      left: s.decorAlign === 'right' ? 'auto' : '0',
+      right: s.decorAlign === 'right' ? '0' : 'auto',
+      top: s.decorTop ?? '-0.32em',
+      fontSize: decorSize,
+      fontWeight: 900,
+      lineHeight: 1,
+      letterSpacing: '2px',
+      color: decorColor,
+      fontFamily: s.decorFont ?? SERIF_EN,
+      margin: 0,
+      zIndex: 0,
+      userSelect: 'none',
+      pointerEvents: 'none',
+    });
+    const frontStyle = toInlineStyle({
+      position: 'relative',
+      zIndex: 1,
+      display: 'inline-block',
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      color: s.color,
+      letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
+    });
+    const wrapStyle = toInlineStyle({
+      position: 'relative',
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+      textAlign: s.textAlign,
+      lineHeight: s.lineHeight,
+    });
+    return `<${tag} style="${wrapStyle}"><span style="${backStyle}">${escapeHtml(
+      decor,
+    )}</span><span style="${frontStyle}">${inner}</span></${tag}>`;
+  }
+
+  // —— 超大锚点标题（display）：大号装饰英文/数字在上，小标题在下，强字号对比 ——
+  if (variant === 'display') {
+    const decor = s.decorText ?? '01';
+    const decorSize = s.decorSize ?? '76px';
+    const decorColor = s.decorColor ?? 'rgba(0,0,0,.10)';
+    const backStyle = toInlineStyle({
+      display: 'block',
+      fontSize: decorSize,
+      fontWeight: 900,
+      lineHeight: 1,
+      letterSpacing: '2px',
+      color: decorColor,
+      fontFamily: s.decorFont ?? SERIF_EN,
+      margin: '0 0 8px',
+      textAlign: s.textAlign,
+      userSelect: 'none',
+      pointerEvents: 'none',
+    });
+    const frontStyle = toInlineStyle({
+      display: 'block',
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      color: s.color,
+      letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
+      textAlign: s.textAlign,
+    });
+    const wrapStyle = toInlineStyle({
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+      textAlign: s.textAlign,
+      lineHeight: s.lineHeight,
+    });
+    return `<${tag} style="${wrapStyle}"><span style="${backStyle}">${escapeHtml(
+      decor,
+    )}</span><span style="${frontStyle}">${inner}</span></${tag}>`;
+  }
+
+  // —— 竖排标题（vertical）：逐字竖排（右起传统阅读），微信稳妥兼容 ——
+  if (variant === 'vertical') {
+    const chars = Array.from(getNodeText(node));
+    const charStyle = toInlineStyle({
+      display: 'block',
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      color: s.color,
+      letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
+      lineHeight: 1.25,
+    });
+    const wrapStyle = toInlineStyle({
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems:
+        s.textAlign === 'center'
+          ? 'center'
+          : s.textAlign === 'right'
+            ? 'flex-end'
+            : 'flex-start',
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+    });
+    const innerChars = chars
+      .map((ch) => `<span style="${charStyle}">${ch === ' ' ? '&nbsp;' : escapeHtml(ch)}</span>`)
+      .join('');
+    return `<${tag} style="${wrapStyle}">${innerChars}</${tag}>`;
+  }
+
+  // —— 描边镂空标题（stroke）：描边 + 透明/浅填充，杂志感 ——
+  if (variant === 'stroke') {
+    const gstyle = toInlineStyle({
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      color: s.color ?? 'transparent',
+      WebkitTextStroke: `${s.strokeWidth ?? '1.5px'} ${accent}`,
+      letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
+      lineHeight: s.lineHeight,
+    });
+    const wrapStyle = toInlineStyle({
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+      textAlign: s.textAlign,
+      lineHeight: s.lineHeight,
+    });
+    return `<${tag} style="${wrapStyle}"><span style="${gstyle}">${inner}</span></${tag}>`;
+  }
+
+  // —— 衬线文艺标题（serif）：衬线字体 + 细线，编辑式排版 ——
+  if (variant === 'serif') {
+    const style = toInlineStyle({
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      color: s.color,
+      fontFamily: s.fontFamily ?? "Georgia,'Songti SC','Source Han Serif SC',serif",
+      letterSpacing: s.letterSpacing,
+      borderBottom: s.borderBottom ?? `2px solid ${accent}`,
+      paddingBottom: s.paddingBottom ?? '8px',
+      display: s.display ?? 'inline-block',
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+      textAlign: s.textAlign,
+    });
+    return `<${tag} style="${style}">${inner}</${tag}>`;
+  }
+
   // block / pill：色块包裹文字
   const isPill = variant === 'pill';
   const decor = toInlineStyle({
@@ -185,6 +340,7 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
     border: s.border,
     fontWeight: s.fontWeight,
     letterSpacing: s.letterSpacing,
+    fontFamily: s.fontFamily,
     boxDecorationBreak: 'clone',
     WebkitBoxDecorationBreak: 'clone',
   });

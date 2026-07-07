@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore';
 // 微信平台按行业分类筛选（其它平台暂无行业分类，仅显示「全部」）
 const CATEGORIES = [
   { key: 'all', label: '全部' },
+  { key: 'premium', label: '高级感' },
   { key: 'business', label: '商务' },
   { key: 'government', label: '政务' },
   { key: 'news', label: '资讯' },
