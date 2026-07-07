@@ -63,4 +63,28 @@ export const biliTechBlue: Theme = {
   code: { background: '#121a2e', color: '#23ade5', fontFamily: MONO, padding: '2px 6px', borderRadius: '6px' },
 };
 
-export const bilibiliThemes: Theme[] = [biliPink, biliTechBlue];
+// 科技动效：粉蓝渐变 + 编号标题，硬核科普
+export const biliCyber: Theme = {
+  id: 'bili-cyber',
+  name: '科技动效',
+  platform: 'bilibili',
+  description: '粉蓝渐变标题 + 编号小标题，硬核科普/数码测评风。',
+  tags: ['tech', 'cyber', 'gradient', 'number'],
+  base: { background: '#f6f9ff', padding: '18px', fontFamily: SANS, fontSize: '16px', lineHeight: '1.8', color: '#1b2733' },
+  tokens: { primary: '#fb7299', secondary: '#00aeec', muted: '#8a98a8', radius: '12px', space: '16px' },
+  heading: {
+    h1: { fontSize: '26px', fontWeight: 800, marginTop: '28px', marginBottom: '12px', variant: 'gradient', gradientFrom: '#fb7299', gradientTo: '#00aeec' },
+    h2: { fontSize: '20px', fontWeight: 800, color: '#fff', marginTop: '24px', marginBottom: '12px', variant: 'block', blockBg: 'linear-gradient(90deg,#fb7299,#ff9bbf)', blockColor: '#fff', blockPadding: '7px 16px', blockRadius: '10px' },
+    h3: { fontSize: '17px', fontWeight: 700, color: '#1b2733', marginTop: '20px', marginBottom: '8px', variant: 'number', accentColor: '#00aeec' },
+  },
+  paragraph: { base: { margin: '0 0 16px', lineHeight: '1.8', color: '#1b2733' } },
+  divider: { type: 'gradient', color: '#00aeec', margin: '20px 0' },
+  quote: { background: '#eaf6ff', borderLeft: '4px solid #00aeec', padding: '14px 16px', color: '#3a5a6a' },
+  card: { background: '#ffffff', border: '1px solid #d6ecf7', borderRadius: '12px', padding: '18px', boxShadow: '0 8px 22px rgba(0,174,236,.12)' },
+  image: { borderRadius: '12px', border: '1px solid #d6ecf7', maxWidth: '100%', captionColor: '#8a98a8', captionFontSize: '13px', captionAlign: 'center' },
+  list: { markerColor: '#fb7299', bullet: '▶' },
+  code: { background: '#eaf6ff', color: '#00aeec', fontFamily: MONO, padding: '2px 6px', borderRadius: '6px' },
+  highlight: { background: 'rgba(251,114,153,.2)', color: '#fb7299', radius: '3px' },
+};
+
+export const bilibiliThemes: Theme[] = [biliPink, biliTechBlue, biliCyber];

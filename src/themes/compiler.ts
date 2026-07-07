@@ -68,6 +68,19 @@ export function linkStyle(theme: Theme): string {
   return toInlineStyle({ color: theme.tokens.primary, textDecoration: 'none' });
 }
 
+/** 重点内容高亮（inline 标记）的内联样式；主题未定义时回退到中性荧光黄。 */
+export function highlightStyle(theme: Theme): string {
+  const h = theme.highlight;
+  return toInlineStyle({
+    background: h?.background ?? 'rgba(255,225,0,.45)',
+    color: h?.color,
+    padding: '1px 4px',
+    borderRadius: h?.radius ?? '3px',
+    boxDecorationBreak: 'clone',
+    WebkitBoxDecorationBreak: 'clone',
+  });
+}
+
 export function listStyle(): string {
   return toInlineStyle({ paddingLeft: '1.4em', margin: '0 0 16px', color: 'inherit' });
 }

@@ -8,8 +8,10 @@ export const Card = Node.create({
   atom: true,
   addAttributes() {
     return {
+      variant: { default: 'default' },
       title: { default: '提示' },
       body: { default: '' },
+      icon: { default: '' },
     };
   },
   parseHTML() {

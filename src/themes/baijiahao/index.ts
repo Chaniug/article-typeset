@@ -64,4 +64,28 @@ export const baijiaFresh: Theme = {
   code: { background: '#eef7f0', color: '#2e9e5b', fontFamily: MONO, padding: '2px 6px', borderRadius: '6px' },
 };
 
-export const baijiahaoThemes: Theme[] = [baijiaNews, baijiaFresh];
+// 资讯轻奢：编号标题 + 金线点缀，深度商业/财经
+export const baijiaLuxe: Theme = {
+  id: 'baijia-luxe',
+  name: '资讯轻奢',
+  platform: 'baijiahao',
+  description: '编号标题 + 金线点缀，深度商业/财经/观点长文。',
+  tags: ['news', 'luxe', 'gold', 'number'],
+  base: { background: '#fcfbf8', padding: '18px', fontFamily: SERIF, fontSize: '16px', lineHeight: '1.85', color: '#2a2722' },
+  tokens: { primary: '#2456b3', secondary: '#c9a36b', muted: '#a89a86', radius: '8px', space: '16px' },
+  heading: {
+    h1: { fontSize: '28px', fontWeight: 800, color: '#1c3f86', marginTop: '28px', marginBottom: '12px', variant: 'underline', accentColor: '#2456b3', paddingBottom: '10px', display: 'inline-block', letterSpacing: '1px' },
+    h2: { fontSize: '21px', fontWeight: 700, color: '#1c3f86', marginTop: '24px', marginBottom: '12px', variant: 'number', accentColor: '#2456b3' },
+    h3: { fontSize: '17px', fontWeight: 700, color: '#2a2722', marginTop: '20px', marginBottom: '8px', variant: 'bar', accentColor: '#c9a36b', paddingLeft: '10px' },
+  },
+  paragraph: { base: { margin: '0 0 16px', lineHeight: '1.85', color: '#2a2722' } },
+  divider: { type: 'gradient', color: '#2456b3', margin: '20px 0' },
+  quote: { background: '#eef2fb', borderLeft: '4px solid #2456b3', padding: '14px 16px', color: '#3a4256' },
+  card: { background: '#ffffff', border: '1px solid #e3e0d6', borderRadius: '8px', padding: '18px', boxShadow: '0 6px 18px rgba(36,86,179,.1)' },
+  image: { borderRadius: '6px', border: '1px solid #eee', maxWidth: '100%', captionColor: '#a89a86', captionFontSize: '13px', captionAlign: 'center' },
+  list: { markerColor: '#2456b3', bullet: '❖' },
+  code: { background: '#eef2fb', color: '#2456b3', fontFamily: MONO, padding: '2px 6px', borderRadius: '4px' },
+  highlight: { background: 'rgba(36,86,179,.16)', color: '#1c3f86', radius: '3px' },
+};
+
+export const baijiahaoThemes: Theme[] = [baijiaNews, baijiaFresh, baijiaLuxe];

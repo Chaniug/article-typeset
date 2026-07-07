@@ -93,4 +93,52 @@ export const xhsMinimalBold: Theme = {
   code: { background: '#f5f5f5', color: '#111111', fontFamily: MONO, padding: '2px 6px', borderRadius: '6px' },
 };
 
-export const xiaohongshuThemes: Theme[] = [xhsCandy, xhsDopamine, xhsMinimalBold];
+// 杂志感：红块标题 + 编号，封面级排版
+export const xhsEditorial: Theme = {
+  id: 'xhs-editorial',
+  name: '杂志感',
+  platform: 'xiaohongshu',
+  description: '红块标题 + 编号小标题，封面级杂志排版，适合干货长文/测评。',
+  tags: ['editorial', 'magazine', 'red'],
+  base: { background: '#ffffff', padding: '14px', fontFamily: SANS, fontSize: '15px', lineHeight: '1.85', color: '#2b2b2b' },
+  tokens: { primary: '#ff2442', secondary: '#ffb300', muted: '#999', radius: '14px', space: '14px' },
+  heading: {
+    h1: { fontSize: '23px', fontWeight: 900, color: '#fff', marginTop: '22px', marginBottom: '10px', variant: 'block', blockBg: '#ff2442', blockColor: '#fff', blockPadding: '8px 16px', blockRadius: '12px' },
+    h2: { fontSize: '18px', fontWeight: 800, color: '#ff2442', marginTop: '20px', marginBottom: '10px', variant: 'number', accentColor: '#ff2442' },
+    h3: { fontSize: '15px', fontWeight: 800, color: '#2b2b2b', marginTop: '16px', marginBottom: '8px', variant: 'bar', accentColor: '#ff2442', paddingLeft: '10px' },
+  },
+  paragraph: { base: { margin: '0 0 14px', lineHeight: '1.85', color: '#2b2b2b' } },
+  divider: { type: 'emoji', color: '#ff2442', margin: '18px 0', content: '📌 📌 📌' },
+  quote: { background: '#fff0f2', borderLeft: '4px solid #ff2442', padding: '12px 14px', color: '#7a2a38' },
+  card: { background: '#fff5f6', border: '1px solid #ffd9de', borderRadius: '14px', padding: '16px', boxShadow: '0 6px 16px rgba(255,36,66,.12)' },
+  image: { borderRadius: '14px', border: 'none', maxWidth: '100%', captionColor: '#999', captionFontSize: '13px', captionAlign: 'center' },
+  list: { markerColor: '#ff2442', bullet: '🔥' },
+  code: { background: '#fff0f2', color: '#ff2442', fontFamily: MONO, padding: '2px 6px', borderRadius: '8px' },
+  highlight: { background: 'rgba(255,36,66,.15)', color: '#ff2442', radius: '3px' },
+};
+
+// 极光：粉青渐变标题，梦幻吸睛
+export const xhsAurora: Theme = {
+  id: 'xhs-aurora',
+  name: '极光',
+  platform: 'xiaohongshu',
+  description: '粉→青渐变标题 + 圆角字框，梦幻吸睛，适合穿搭/旅行/生活方式。',
+  tags: ['aurora', 'gradient', 'dreamy'],
+  base: { background: '#fbfaff', padding: '14px', fontFamily: SANS, fontSize: '15px', lineHeight: '1.85', color: '#3a3550' },
+  tokens: { primary: '#a86bff', secondary: '#42d6c3', muted: '#9a93b0', radius: '16px', space: '14px' },
+  heading: {
+    h1: { fontSize: '23px', fontWeight: 900, marginTop: '22px', marginBottom: '10px', variant: 'gradient', gradientFrom: '#a86bff', gradientTo: '#42d6c3' },
+    h2: { fontSize: '18px', fontWeight: 800, color: '#fff', marginTop: '20px', marginBottom: '10px', variant: 'block', blockBg: 'linear-gradient(135deg,#a86bff,#42d6c3)', blockColor: '#fff', blockPadding: '6px 16px', blockRadius: '999px' },
+    h3: { fontSize: '15px', fontWeight: 800, color: '#a86bff', marginTop: '16px', marginBottom: '8px', variant: 'bar', accentColor: '#42d6c3', paddingLeft: '10px' },
+  },
+  paragraph: { base: { margin: '0 0 14px', lineHeight: '1.85', color: '#3a3550' } },
+  divider: { type: 'emoji', color: '#a86bff', margin: '18px 0', content: '✨ ✨ ✨' },
+  quote: { background: '#f3eeff', borderLeft: '4px solid #a86bff', padding: '12px 14px', color: '#5a4a7a' },
+  card: { background: '#f7f2ff', border: '1px solid #e2d4ff', borderRadius: '16px', padding: '16px', boxShadow: '0 8px 20px rgba(168,107,255,.15)' },
+  image: { borderRadius: '16px', border: 'none', maxWidth: '100%', captionColor: '#9a93b0', captionFontSize: '13px', captionAlign: 'center' },
+  list: { markerColor: '#a86bff', bullet: '💜' },
+  code: { background: '#f3eeff', color: '#a86bff', fontFamily: MONO, padding: '2px 6px', borderRadius: '8px' },
+  highlight: { background: 'rgba(168,107,255,.18)', color: '#4a2f7a', radius: '3px' },
+};
+
+export const xiaohongshuThemes: Theme[] = [xhsCandy, xhsDopamine, xhsMinimalBold, xhsEditorial, xhsAurora];

@@ -8,6 +8,9 @@ import { Card } from './Card';
 import { QuoteBox } from './QuoteBox';
 import { Divider } from './Divider';
 import { ImageFrame } from './ImageFrame';
+import { Highlight } from './Highlight';
+import { ImageGrid } from './ImageGrid';
+import { Widget } from './Widget';
 
 export function buildExtensions(): Extensions {
   return [
@@ -20,6 +23,9 @@ export function buildExtensions(): Extensions {
     QuoteBox,
     Divider,
     ImageFrame,
+    Highlight,
+    ImageGrid,
+    Widget,
   ];
 }
 
@@ -39,8 +45,10 @@ export const initialContent = {
       content: [
         {
           type: 'text',
-          text: '选一个模板，粘贴你的内容，点一下就能把文章变成吸睛的版面。',
+          text: '选一个模板，粘贴你的内容，点一下就能把文章变成',
         },
+        { type: 'text', marks: [{ type: 'highlight' }], text: '吸睛的版面' },
+        { type: 'text', text: '。' },
       ],
     },
     {
@@ -58,8 +66,8 @@ export const initialContent = {
       ],
     },
     {
-      type: 'quoteBox',
-      attrs: { text: '排版不是装饰，而是内容呼吸的节奏。' },
+      type: 'card',
+      attrs: { variant: 'quote', title: '', body: '排版不是装饰，而是内容呼吸的节奏。' },
     },
     {
       type: 'heading',
@@ -101,15 +109,33 @@ export const initialContent = {
       ],
     },
     {
+      type: 'imageGrid',
+      attrs: {
+        images: [
+          { src: SAMPLE_IMG, caption: '图一' },
+          { src: SAMPLE_IMG, caption: '图二' },
+          { src: SAMPLE_IMG, caption: '图三' },
+        ],
+      },
+    },
+    {
+      type: 'card',
+      attrs: { variant: 'icon', icon: '💡', title: '小贴士', body: '切换平台按钮，即可看到对应平台的模板库。' },
+    },
+    {
       type: 'divider',
     },
     {
       type: 'card',
-      attrs: { title: '💡 小贴士', body: '切换平台按钮，即可看到对应平台的模板库。' },
+      attrs: { variant: 'note', icon: '📌', title: '便签', body: '多图并排、字框、动态组件都已就位，挑模板即可一键套用。' },
     },
     {
-      type: 'imageFrame',
-      attrs: { src: SAMPLE_IMG, alt: '示例图片', caption: '图：示意配图' },
+      type: 'widget',
+      attrs: { variant: 'follow' },
+    },
+    {
+      type: 'widget',
+      attrs: { variant: 'like' },
     },
     {
       type: 'heading',
@@ -125,4 +151,4 @@ export const initialContent = {
   ],
 };
 
-export { Card, QuoteBox, Divider, ImageFrame };
+export { Card, QuoteBox, Divider, ImageFrame, Highlight, ImageGrid, Widget };

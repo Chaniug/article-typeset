@@ -11,6 +11,7 @@ export const ImageFrame = Node.create({
       src: { default: '' },
       alt: { default: '' },
       caption: { default: '' },
+      variant: { default: 'rounded' },
     };
   },
   parseHTML() {

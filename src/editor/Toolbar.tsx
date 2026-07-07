@@ -51,6 +51,7 @@ export function Toolbar({ editor }: Props) {
       <B label="I" title="斜体" active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} />
       <B label="U" title="下划线" active={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()} />
       <B label="S" title="删除线" active={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()} />
+      <B label="✨高亮" title="重点高亮" active={editor.isActive('highlight')} onClick={() => editor.chain().focus().toggleMark('highlight').run()} />
       <B label="链接" title="链接" active={editor.isActive('link')} onClick={setLink} />
       <span style={{ width: 1, background: '#eee', margin: '0 2px' }} />
       <B label="H1" active={editor.isActive('heading', { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} />
@@ -62,9 +63,16 @@ export function Toolbar({ editor }: Props) {
       <B label="引用" active={editor.isActive('blockquote')} onClick={() => editor.chain().focus().toggleBlockquote().run()} />
       <span style={{ width: 1, background: '#eee', margin: '0 2px' }} />
       <B label="图片" onClick={insertImage} />
-      <B label="卡片" onClick={() => insertNode('card', { title: '提示', body: '' })} />
+      <B label="卡片" onClick={() => insertNode('card', { variant: 'default', title: '提示', body: '' })} />
+      <B label="字框" onClick={() => insertNode('card', { variant: 'note', icon: '📌', title: '便签', body: '' })} />
       <B label="引用框" onClick={() => insertNode('quoteBox', { text: '' })} />
-      <B label="图框" onClick={() => insertNode('imageFrame', { src: '', caption: '' })} />
+      <B label="图框" onClick={() => insertNode('imageFrame', { src: '', caption: '', variant: 'rounded' })} />
+      <B label="多图" onClick={() => insertNode('imageGrid', { images: [{ src: '', caption: '' }, { src: '', caption: '' }] })} />
+      <span style={{ width: 1, background: '#eee', margin: '0 2px' }} />
+      <B label="关注" onClick={() => insertNode('widget', { variant: 'follow' })} />
+      <B label="在看" onClick={() => insertNode('widget', { variant: 'like' })} />
+      <B label="二维码" onClick={() => insertNode('widget', { variant: 'qr' })} />
+      <B label="往期" onClick={() => insertNode('widget', { variant: 'past' })} />
       <span style={{ width: 1, background: '#eee', margin: '0 2px' }} />
       <B label="— 线" onClick={() => insertDivider('line')} />
       <B label="•••" onClick={() => insertDivider('dots')} />
