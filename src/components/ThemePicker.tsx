@@ -6,6 +6,7 @@ import { useAppStore } from '../store/useAppStore';
 const CATEGORIES = [
   { key: 'all', label: '全部' },
   { key: 'premium', label: '高级感' },
+  { key: 'tech', label: '科技' },
   { key: 'business', label: '商务' },
   { key: 'government', label: '政务' },
   { key: 'news', label: '资讯' },

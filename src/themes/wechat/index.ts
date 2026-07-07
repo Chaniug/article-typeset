@@ -6,6 +6,7 @@ import { gradientSunset, neonDark, insPink, inkEditorial, guochao } from './stri
 import { premiumWechatThemes } from './premium';
 import { categoryWechatThemes } from './categories';
 import { advancedWechatThemes } from './advanced';
+import { techWechatThemes } from './tech';
 
 export const wechatThemes: Theme[] = [
   minimalLight,
@@ -19,4 +20,5 @@ export const wechatThemes: Theme[] = [
   ...premiumWechatThemes,
   ...categoryWechatThemes,
   ...advancedWechatThemes,
+  ...techWechatThemes,
 ];

@@ -7,6 +7,9 @@ const VARIANTS: { value: string; label: string }[] = [
   { value: 'past', label: '往期推荐' },
   { value: 'timeline', label: '时间轴' },
   { value: 'steps', label: '步骤条' },
+  { value: 'radar', label: '雷达脉冲' },
+  { value: 'scanline', label: '扫描线' },
+  { value: 'pulse', label: '脉冲点' },
 ];
 
 export function WidgetView({ node, updateAttributes }: NodeViewProps) {

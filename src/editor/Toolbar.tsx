@@ -65,6 +65,10 @@ export function Toolbar({ editor }: Props) {
       <B label="图片" onClick={insertImage} />
       <B label="卡片" onClick={() => insertNode('card', { variant: 'default', title: '提示', body: '' })} />
       <B label="字框" onClick={() => insertNode('card', { variant: 'note', icon: '📌', title: '便签', body: '' })} />
+      <B label="四角框" onClick={() => insertNode('card', { variant: 'frame', icon: '◆', title: '要点', body: '' })} />
+      <B label="标签框" onClick={() => insertNode('card', { variant: 'tag', icon: '标签', title: 'NOTE', body: '' })} />
+      <B label="信息框" onClick={() => insertNode('card', { variant: 'info', title: '提示', body: '' })} />
+      <B label="警示框" onClick={() => insertNode('card', { variant: 'warning', title: '注意', body: '' })} />
       <B label="引用框" onClick={() => insertNode('quoteBox', { text: '' })} />
       <B label="图框" onClick={() => insertNode('imageFrame', { src: '', caption: '', variant: 'rounded' })} />
       <B label="多图" onClick={() => insertNode('imageGrid', { images: [{ src: '', caption: '' }, { src: '', caption: '' }] })} />
@@ -73,6 +77,9 @@ export function Toolbar({ editor }: Props) {
       <B label="在看" onClick={() => insertNode('widget', { variant: 'like' })} />
       <B label="二维码" onClick={() => insertNode('widget', { variant: 'qr' })} />
       <B label="往期" onClick={() => insertNode('widget', { variant: 'past' })} />
+      <B label="雷达" onClick={() => insertNode('widget', { variant: 'radar' })} />
+      <B label="扫描" onClick={() => insertNode('widget', { variant: 'scanline' })} />
+      <B label="脉冲" onClick={() => insertNode('widget', { variant: 'pulse' })} />
       <span style={{ width: 1, background: '#eee', margin: '0 2px' }} />
       <B label="— 线" onClick={() => insertDivider('line')} />
       <B label="•••" onClick={() => insertDivider('dots')} />

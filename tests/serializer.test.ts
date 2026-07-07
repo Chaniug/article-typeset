@@ -98,3 +98,50 @@ describe('高级感标题变体', () => {
     expect(html).toContain('读书');
   });
 });
+
+describe('字框与动态组件', () => {
+  it('四角框(frame)：渲染四个角标 span', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'card', attrs: { variant: 'frame', icon: '◆', title: '要点', body: '框线内容' } }] },
+      theme,
+    );
+    const corners = html.match(/<span style="[^"]*position:\s*absolute[^"]*">/g) ?? [];
+    expect(corners.length).toBeGreaterThanOrEqual(4);
+    expect(html).toContain('要点');
+    expect(html).toContain('框线内容');
+  });
+
+  it('标签框(tag)：渲染顶部标签胶囊', () => {
+    const theme = getTheme('wechat-tech-hud')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'card', attrs: { variant: 'tag', icon: '标签', title: 'NOTE', body: '标签框内容' } }] },
+      theme,
+    );
+    expect(html).toContain('标签');
+    expect(html).toContain('标签框内容');
+  });
+
+  it('信息框/警示框(info/warning)：渲染提示与注意', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const info = serialize({ type: 'doc', content: [{ type: 'card', attrs: { variant: 'info', title: '提示', body: '信息' } }] }, theme);
+    const warn = serialize({ type: 'doc', content: [{ type: 'card', attrs: { variant: 'warning', title: '注意', body: '警告' } }] }, theme);
+    expect(info).toContain('提示');
+    expect(warn).toContain('注意');
+  });
+
+  it('雷达脉冲(radar)：使用 SVG SMIL 动效', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const html = serialize({ type: 'doc', content: [{ type: 'widget', attrs: { variant: 'radar' } }] }, theme);
+    expect(html).toContain('<animate');
+    expect(html).toContain('持续更新中');
+  });
+
+  it('扫描线(scanline)与脉冲点(pulse)：含 SMIL 动效', () => {
+    const theme = getTheme('wechat-tech-data')!;
+    const scan = serialize({ type: 'doc', content: [{ type: 'widget', attrs: { variant: 'scanline' } }] }, theme);
+    const pulse = serialize({ type: 'doc', content: [{ type: 'widget', attrs: { variant: 'pulse' } }] }, theme);
+    expect(scan).toContain('<animate');
+    expect(pulse).toContain('<animate');
+  });
+});

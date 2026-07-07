@@ -7,6 +7,10 @@ const VARIANTS: { value: string; label: string }[] = [
   { value: 'icon', label: '图标卡' },
   { value: 'step', label: '步骤卡' },
   { value: 'quote', label: '金句卡' },
+  { value: 'frame', label: '四角框' },
+  { value: 'tag', label: '标签框' },
+  { value: 'info', label: '信息框' },
+  { value: 'warning', label: '警示框' },
 ];
 
 export function CardView({ node, updateAttributes }: NodeViewProps) {

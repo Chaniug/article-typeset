@@ -130,12 +130,20 @@ export const initialContent = {
       attrs: { variant: 'note', icon: '📌', title: '便签', body: '多图并排、字框、动态组件都已就位，挑模板即可一键套用。' },
     },
     {
+      type: 'card',
+      attrs: { variant: 'frame', icon: '◆', title: '要点', body: '四角框、标签框、信息框、警示框——把重点内容装进有质感的框线里。' },
+    },
+    {
       type: 'widget',
       attrs: { variant: 'follow' },
     },
     {
       type: 'widget',
       attrs: { variant: 'like' },
+    },
+    {
+      type: 'widget',
+      attrs: { variant: 'radar' },
     },
     {
       type: 'heading',

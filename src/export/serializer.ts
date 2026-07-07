@@ -353,6 +353,7 @@ function renderCard(node: PMNode, theme: Theme): string {
   const body = node.attrs?.body ?? '';
   const icon = node.attrs?.icon ?? '';
   const primary = theme.tokens.primary;
+  const secondary = theme.tokens.secondary;
   const radius = theme.tokens.radius;
 
   const titleStyle = toInlineStyle({
@@ -455,6 +456,99 @@ function renderCard(node: PMNode, theme: Theme): string {
     return `<section style="${boxStyle}"><p style="${titleStyle}">${escapeHtml(
       icon ? `${icon} ${title}` : title,
     )}</p><p style="${bodyStyle}">${escapeHtml(body)}</p></section>`;
+  }
+
+  // —— 四角框（frame）：科技感角标框，四角装饰线 ——
+  if (variant === 'frame') {
+    const boxStyle = toInlineStyle({
+      position: 'relative',
+      background: theme.card.background ?? '#fff',
+      border: theme.card.border ?? `1px solid ${primary}`,
+      borderRadius: radius,
+      padding: '20px 22px',
+      margin: '18px 0',
+    });
+    const corner = (pos: 'tl' | 'tr' | 'bl' | 'br') => {
+      const m: Record<string, string> = {
+        tl: 'top:6px;left:6px;border-top-width:2px;border-left-width:2px;border-right-width:0;border-bottom-width:0',
+        tr: 'top:6px;right:6px;border-top-width:2px;border-right-width:2px;border-left-width:0;border-bottom-width:0',
+        bl: 'bottom:6px;left:6px;border-bottom-width:2px;border-left-width:2px;border-right-width:0;border-top-width:0',
+        br: 'bottom:6px;right:6px;border-bottom-width:2px;border-right-width:2px;border-left-width:0;border-top-width:0',
+      };
+      return toInlineStyle({
+        position: 'absolute',
+        top: pos === 'tl' || pos === 'tr' ? '6px' : 'auto',
+        left: pos === 'tl' || pos === 'bl' ? '6px' : 'auto',
+        right: pos === 'tr' || pos === 'br' ? '6px' : 'auto',
+        bottom: pos === 'bl' || pos === 'br' ? '6px' : 'auto',
+        width: '14px',
+        height: '14px',
+        borderTop: m[pos].includes('border-top-width:2px') ? '2px solid' : '0',
+        borderLeft: m[pos].includes('border-left-width:2px') ? '2px solid' : '0',
+        borderRight: m[pos].includes('border-right-width:2px') ? '2px solid' : '0',
+        borderBottom: m[pos].includes('border-bottom-width:2px') ? '2px solid' : '0',
+        borderColor: secondary,
+      });
+    };
+    return `<section style="${boxStyle}"><span style="${corner('tl')}"></span><span style="${corner(
+      'tr',
+    )}"></span><span style="${corner('bl')}"></span><span style="${corner(
+      'br',
+    )}"></span><p style="${titleStyle}">${escapeHtml(
+      icon ? `${icon} ${title}` : title,
+    )}</p><p style="${bodyStyle}">${escapeHtml(body)}</p></section>`;
+  }
+
+  // —— 标签框（tag）：顶部带一个标签胶囊的框 ——
+  if (variant === 'tag') {
+    const label = icon || title || 'NOTE';
+    const boxStyle = toInlineStyle({
+      position: 'relative',
+      background: theme.card.background ?? '#fff',
+      border: theme.card.border ?? `1px solid ${primary}55`,
+      borderLeft: `4px solid ${primary}`,
+      borderRadius: radius,
+      padding: '20px 18px 16px',
+      margin: '22px 0 16px',
+    });
+    const tagStyle = toInlineStyle({
+      position: 'absolute',
+      top: '-12px',
+      left: '14px',
+      background: primary,
+      color: '#fff',
+      fontSize: '12px',
+      fontWeight: 700,
+      padding: '3px 12px',
+      borderRadius: '999px',
+      letterSpacing: '1px',
+    });
+    return `<section style="${boxStyle}"><span style="${tagStyle}">${escapeHtml(
+      label,
+    )}</span><p style="${bodyStyle}">${escapeHtml(body || title)}</p></section>`;
+  }
+
+  // —— 信息框 / 警示框（info / warning）——
+  if (variant === 'info' || variant === 'warning') {
+    const isW = variant === 'warning';
+    const bg = isW ? 'rgba(245,158,11,.12)' : 'rgba(59,130,246,.10)';
+    const bd = isW ? '#f59e0b' : '#3b82f6';
+    const ic = isW ? '⚠' : 'ℹ';
+    const boxStyle = toInlineStyle({
+      background: bg,
+      border: `1px solid ${bd}55`,
+      borderLeft: `4px solid ${bd}`,
+      borderRadius: radius,
+      padding: '14px 16px',
+      margin: '16px 0',
+    });
+    return `<section style="${boxStyle}"><p style="${toInlineStyle({
+      margin: '0 0 4px',
+      fontWeight: 700,
+      color: bd,
+    })}">${ic} ${escapeHtml(title || (isW ? '注意' : '提示'))}</p><p style="${bodyStyle}">${escapeHtml(
+      body,
+    )}</p></section>`;
   }
 
   // default
@@ -674,6 +768,68 @@ function renderWidget(node: PMNode, theme: Theme): string {
       })
       .join('');
     return `<section style="${box}">${rows}</section>`;
+  }
+
+  // —— 雷达脉冲（radar）：同心圆向外扩散，科技感“动态图标” ——
+  if (variant === 'radar') {
+    const ring = (begin: number) =>
+      `<circle cx="22" cy="22" r="4" fill="none" stroke="${primary}" stroke-width="2" opacity="0">` +
+      `<animate attributeName="r" values="4;21" dur="2s" begin="${begin}s" repeatCount="indefinite"/>` +
+      `<animate attributeName="opacity" values="0.85;0" dur="2s" begin="${begin}s" repeatCount="indefinite"/>` +
+      `</circle>`;
+    const svg = `<svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">${ring(
+      0,
+    )}${ring(1)}<circle cx="22" cy="22" r="3.5" fill="${primary}"/></svg>`;
+    const box = toInlineStyle({
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      background: theme.card.background ?? '#f6f8fa',
+      border: `1px solid ${primary}55`,
+      borderRadius: radius,
+      padding: '12px 16px',
+      margin: '16px 0',
+    });
+    return `<section style="${box}">${svg}<span style="${toInlineStyle({
+      fontWeight: 600,
+      color: theme.base.color,
+    })}">${escapeHtml(text || '持续更新中…')}</span></section>`;
+  }
+
+  // —— 扫描线（scanline）：HUD 扫描动效，科技感分隔/状态 ——
+  if (variant === 'scanline') {
+    const svg = `<svg width="100%" height="48" preserveAspectRatio="none" viewBox="0 0 100 48" xmlns="http://www.w3.org/2000/svg">` +
+      `<rect width="100" height="48" fill="${primary}12"/>` +
+      `<line x1="0" y1="0" x2="0" y2="48" stroke="${primary}" stroke-width="2">` +
+      `<animate attributeName="x1" values="0;100;0" dur="2.6s" repeatCount="indefinite"/>` +
+      `<animate attributeName="x2" values="0;100;0" dur="2.6s" repeatCount="indefinite"/>` +
+      `</line>` +
+      `<text x="50" y="29" text-anchor="middle" font-size="13" fill="${theme.base.color}">${escapeHtml(
+        text || 'SCANNING…',
+      )}</text></svg>`;
+    const box = toInlineStyle({
+      background: theme.card.background ?? '#fff',
+      border: `1px solid ${primary}55`,
+      borderRadius: radius,
+      overflow: 'hidden',
+      margin: '16px 0',
+    });
+    return `<section style="${box}">${svg}</section>`;
+  }
+
+  // —— 脉冲点（pulse）：呼吸闪烁的状态点 + 文案 ——
+  if (variant === 'pulse') {
+    const dot = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4" fill="${primary}"><animate attributeName="opacity" values="1;0.25;1" dur="1.2s" repeatCount="indefinite"/></circle></svg>`;
+    const box = toInlineStyle({
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      justifyContent: 'center',
+      margin: '16px 0',
+      color: theme.base.color,
+      fontWeight: 600,
+    });
+    return `<section style="${box}">${dot}<span>${escapeHtml(text || '实时同步')}</span></section>`;
   }
 
   // steps
