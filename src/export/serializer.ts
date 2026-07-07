@@ -40,6 +40,11 @@ interface Ctx {
   hCounters: Record<number, number>;
 }
 
+/** 粘贴兼容模式开关：微信/各平台编辑器会剥离 <svg>、position:absolute、
+ *  background-clip:text 透明字等写法，compat 下生成平台安全的降级 HTML。
+ *  由 serialize() 同步设置，renderBlock 内同步用完，无竞态。 */
+let COMPAT = false;
+
 function renderMarks(text: string, marks: PMMark[] | undefined, theme: Theme): string {
   let out = escapeHtml(text);
   for (const m of marks ?? []) {
@@ -149,6 +154,17 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
   if (variant === 'gradient') {
     const from = s.gradientFrom ?? accent;
     const to = s.gradientTo ?? theme.tokens.secondary;
+    if (COMPAT) {
+      // 微信不支持 background-clip:text，透明字会不可见 → 回退渐变起色实色
+      const gstyle = toInlineStyle({
+        fontSize: s.fontSize,
+        fontWeight: s.fontWeight,
+        lineHeight: s.lineHeight,
+        letterSpacing: s.letterSpacing,
+        color: from,
+      });
+      return `<${tag} style="${wrap}"><span style="${gstyle}">${inner}</span></${tag}>`;
+    }
     const gstyle = toInlineStyle({
       background: `linear-gradient(90deg, ${from}, ${to})`,
       WebkitBackgroundClip: 'text',
@@ -185,6 +201,40 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
     const decor = s.decorText ?? '01';
     const decorSize = s.decorSize ?? '64px';
     const decorColor = s.decorColor ?? 'rgba(0,0,0,.07)';
+    const frontStyle = toInlineStyle({
+      display: 'block',
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      color: s.color,
+      letterSpacing: s.letterSpacing,
+      fontFamily: s.fontFamily,
+      textAlign: s.textAlign,
+    });
+    const wrapStyle = toInlineStyle({
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+      textAlign: s.textAlign,
+      lineHeight: s.lineHeight,
+    });
+    if (COMPAT) {
+      // 微信剥离 position:absolute，改用负 margin 让小标题压在大字底纹上形成叠放
+      const backStyle = toInlineStyle({
+        display: 'block',
+        fontSize: decorSize,
+        fontWeight: 900,
+        lineHeight: 0.8,
+        letterSpacing: '2px',
+        color: decorColor,
+        fontFamily: s.decorFont ?? SERIF_EN,
+        margin: '0 0 -0.42em',
+        textAlign: s.textAlign,
+        userSelect: 'none',
+        pointerEvents: 'none',
+      });
+      return `<${tag} style="${wrapStyle}"><span style="${backStyle}">${escapeHtml(
+        decor,
+      )}</span><span style="${frontStyle}">${inner}</span></${tag}>`;
+    }
     const backStyle = toInlineStyle({
       position: 'absolute',
       left: s.decorAlign === 'right' ? 'auto' : '0',
@@ -201,7 +251,7 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
       userSelect: 'none',
       pointerEvents: 'none',
     });
-    const frontStyle = toInlineStyle({
+    const frontStyleRel = toInlineStyle({
       position: 'relative',
       zIndex: 1,
       display: 'inline-block',
@@ -211,16 +261,16 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
       letterSpacing: s.letterSpacing,
       fontFamily: s.fontFamily,
     });
-    const wrapStyle = toInlineStyle({
+    const wrapRel = toInlineStyle({
       position: 'relative',
       marginTop: s.marginTop,
       marginBottom: s.marginBottom,
       textAlign: s.textAlign,
       lineHeight: s.lineHeight,
     });
-    return `<${tag} style="${wrapStyle}"><span style="${backStyle}">${escapeHtml(
+    return `<${tag} style="${wrapRel}"><span style="${backStyle}">${escapeHtml(
       decor,
-    )}</span><span style="${frontStyle}">${inner}</span></${tag}>`;
+    )}</span><span style="${frontStyleRel}">${inner}</span></${tag}>`;
   }
 
   // —— 超大锚点标题（display）：大号装饰英文/数字在上，小标题在下，强字号对比 ——
@@ -263,6 +313,21 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
 
   // —— 竖排标题（vertical）：逐字竖排（右起传统阅读），微信稳妥兼容 ——
   if (variant === 'vertical') {
+    if (COMPAT) {
+      // 微信对 flex 竖排支持不稳定，退化为普通横向标题（保留字号/颜色）
+      const style = toInlineStyle({
+        fontSize: s.fontSize,
+        fontWeight: s.fontWeight,
+        color: s.color,
+        letterSpacing: s.letterSpacing,
+        fontFamily: s.fontFamily,
+        textAlign: s.textAlign,
+        marginTop: s.marginTop,
+        marginBottom: s.marginBottom,
+        lineHeight: s.lineHeight,
+      });
+      return `<${tag} style="${style}">${inner}</${tag}>`;
+    }
     const chars = Array.from(getNodeText(node));
     const charStyle = toInlineStyle({
       display: 'block',
@@ -293,6 +358,25 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
 
   // —— 描边镂空标题（stroke）：描边 + 透明/浅填充，杂志感 ——
   if (variant === 'stroke') {
+    const wrapStyle = toInlineStyle({
+      marginTop: s.marginTop,
+      marginBottom: s.marginBottom,
+      textAlign: s.textAlign,
+      lineHeight: s.lineHeight,
+    });
+    if (COMPAT) {
+      // 透明字在部分微信环境不可见，回退实色（描边色），保留 webkit 描边增效
+      const gstyle = toInlineStyle({
+        fontSize: s.fontSize,
+        fontWeight: s.fontWeight,
+        color: s.color && s.color !== 'transparent' ? s.color : accent,
+        WebkitTextStroke: `${s.strokeWidth ?? '1.5px'} ${accent}`,
+        letterSpacing: s.letterSpacing,
+        fontFamily: s.fontFamily,
+        lineHeight: s.lineHeight,
+      });
+      return `<${tag} style="${wrapStyle}"><span style="${gstyle}">${inner}</span></${tag}>`;
+    }
     const gstyle = toInlineStyle({
       fontSize: s.fontSize,
       fontWeight: s.fontWeight,
@@ -300,12 +384,6 @@ function renderHeading(node: PMNode, theme: Theme, ctx: Ctx): string {
       WebkitTextStroke: `${s.strokeWidth ?? '1.5px'} ${accent}`,
       letterSpacing: s.letterSpacing,
       fontFamily: s.fontFamily,
-      lineHeight: s.lineHeight,
-    });
-    const wrapStyle = toInlineStyle({
-      marginTop: s.marginTop,
-      marginBottom: s.marginBottom,
-      textAlign: s.textAlign,
       lineHeight: s.lineHeight,
     });
     return `<${tag} style="${wrapStyle}"><span style="${gstyle}">${inner}</span></${tag}>`;
@@ -460,6 +538,24 @@ function renderCard(node: PMNode, theme: Theme): string {
 
   // —— 四角框（frame）：科技感角标框，四角装饰线 ——
   if (variant === 'frame') {
+    const outerStyle = toInlineStyle({
+      background: theme.card.background ?? '#fff',
+      border: `2px solid ${primary}`,
+      borderRadius: radius,
+      padding: '6px',
+      margin: '18px 0',
+    });
+    const innerStyle = toInlineStyle({
+      border: `1px solid ${secondary}`,
+      borderRadius: `calc(${radius} - 2px)`,
+      padding: '16px 18px',
+    });
+    if (COMPAT) {
+      // 微信剥离 position:absolute，改用双线嵌套框保留科技感，无角标定位
+      return `<section style="${outerStyle}"><section style="${innerStyle}"><p style="${titleStyle}">${escapeHtml(
+        icon ? `${icon} ${title}` : title,
+      )}</p><p style="${bodyStyle}">${escapeHtml(body)}</p></section></section>`;
+    }
     const boxStyle = toInlineStyle({
       position: 'relative',
       background: theme.card.background ?? '#fff',
@@ -523,6 +619,31 @@ function renderCard(node: PMNode, theme: Theme): string {
       borderRadius: '999px',
       letterSpacing: '1px',
     });
+    if (COMPAT) {
+      // 微信剥离 position:absolute，标签用负 margin 上移压在边框上
+      const boxCompat = toInlineStyle({
+        background: theme.card.background ?? '#fff',
+        border: theme.card.border ?? `1px solid ${primary}55`,
+        borderLeft: `4px solid ${primary}`,
+        borderRadius: radius,
+        padding: '0 18px 16px',
+        margin: '22px 0 16px',
+      });
+      const tagCompat = toInlineStyle({
+        display: 'inline-block',
+        background: primary,
+        color: '#fff',
+        fontSize: '12px',
+        fontWeight: 700,
+        padding: '3px 12px',
+        borderRadius: '999px',
+        letterSpacing: '1px',
+        margin: '-28px 0 12px',
+      });
+      return `<section style="${boxCompat}"><span style="${tagCompat}">${escapeHtml(
+        label,
+      )}</span><p style="${bodyStyle}">${escapeHtml(body || title)}</p></section>`;
+    }
     return `<section style="${boxStyle}"><span style="${tagStyle}">${escapeHtml(
       label,
     )}</span><p style="${bodyStyle}">${escapeHtml(body || title)}</p></section>`;
@@ -571,9 +692,16 @@ function renderImageFrame(node: PMNode, theme: Theme): string {
   const extra: Record<string, any> = {};
   if (variant === 'circle') {
     extra.borderRadius = '50%';
-    extra.aspectRatio = '1 / 1';
     extra.objectFit = 'cover';
     extra.border = `3px solid ${theme.tokens.primary}`;
+    if (COMPAT) {
+      // 微信不支持 aspect-ratio，圆形图改用固定尺寸居中
+      extra.width = '200px';
+      extra.height = '200px';
+      extra.margin = '0 auto';
+    } else {
+      extra.aspectRatio = '1 / 1';
+    }
   } else if (variant === 'shadow') {
     extra.borderRadius = '14px';
     extra.boxShadow = '0 10px 28px rgba(0,0,0,.18)';
@@ -587,8 +715,9 @@ function renderImageFrame(node: PMNode, theme: Theme): string {
   }
   const imgStyle = toInlineStyle({
     display: 'block',
-    width: '100%',
-    margin: '0 auto',
+    width: extra.width ?? '100%',
+    height: extra.height,
+    margin: extra.margin ?? '0 auto',
     borderRadius: extra.borderRadius,
     border: extra.border,
     boxShadow: extra.boxShadow,
@@ -651,11 +780,43 @@ function renderWidget(node: PMNode, theme: Theme): string {
       fontWeight: 600,
       letterSpacing: '1px',
     });
+    if (COMPAT) {
+      // 微信剥离 <svg>，箭头用字符
+      const arrow = '<span style="display:inline-block;margin-left:6px;font-size:18px;">⬇</span>';
+      return `<section style="${box}">${escapeHtml(
+        text || '点击上方蓝字「关注我们」，不错过每篇干货',
+      )}${arrow}</section>`;
+    }
     const arrow = `<svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align:middle;margin-left:6px" xmlns="http://www.w3.org/2000/svg"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><animateTransform attributeName="transform" type="translate" values="0 3; 0 -3; 0 3" dur="1.3s" repeatCount="indefinite"/></path></svg>`;
     return `<section style="${box}">${escapeHtml(text || '点击上方蓝字「关注我们」，不错过每篇干货')}${arrow}</section>`;
   }
 
   if (variant === 'like') {
+    const row = toInlineStyle({
+      display: 'flex',
+      gap: '10px',
+      justifyContent: 'center',
+      margin: '18px 0',
+    });
+    if (COMPAT) {
+      // 微信剥离 <svg>，爱心用字符；inline-flex 不稳，按钮改用 inline-block
+      const pill = (color: string) =>
+        toInlineStyle({
+          display: 'inline-block',
+          background: '#fff',
+          color,
+          border: `1.5px solid ${color}`,
+          borderRadius: '999px',
+          padding: '8px 18px',
+          fontSize: '14px',
+          fontWeight: 700,
+          margin: '0 5px',
+        });
+      const heart = `<span style="color:${secondary}">❤</span>`;
+      return `<section style="${row}"><span style="${pill(
+        primary,
+      )}">👍 点赞</span><span style="${pill(secondary)}">❤ 在看 ${heart}</span></section>`;
+    }
     const pill = (color: string) =>
       toInlineStyle({
         display: 'inline-flex',
@@ -670,18 +831,13 @@ function renderWidget(node: PMNode, theme: Theme): string {
         fontWeight: 700,
       });
     const heart = `<svg width="18" height="22" viewBox="0 0 18 22" style="vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><text x="9" y="15" font-size="13" text-anchor="middle" fill="${secondary}">❤<animateTransform attributeName="transform" type="translate" values="0 0; 0 -12" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="1.6s" repeatCount="indefinite"/></text></svg>`;
-    const row = toInlineStyle({
-      display: 'flex',
-      gap: '10px',
-      justifyContent: 'center',
-      margin: '18px 0',
-    });
     return `<section style="${row}"><span style="${pill(
       primary,
     )}">👍 点赞</span><span style="${pill(secondary)}">❤ 在看 ${heart}</span></section>`;
   }
 
   if (variant === 'qr') {
+    const src = node.attrs?.src ?? '';
     const box = toInlineStyle({
       background: theme.card.background ?? '#f6f8fa',
       border: theme.card.border ?? `1px solid ${primary}`,
@@ -690,6 +846,42 @@ function renderWidget(node: PMNode, theme: Theme): string {
       margin: '18px 0',
       textAlign: 'center',
     });
+    const labelStyle = toInlineStyle({
+      margin: 0,
+      fontWeight: 700,
+      color: theme.base.color,
+    });
+    if (src) {
+      // 有真实二维码图片，直接渲染 <img>（微信要求 https）
+      const qr = toInlineStyle({
+        width: '140px',
+        height: '140px',
+        margin: '0 auto 10px',
+        borderRadius: '8px',
+        border: '1px solid #e5e7eb',
+      });
+      return `<section style="${box}"><img src="${escapeAttr(src)}" alt="二维码" style="${qr}" /><p style="${labelStyle}">${escapeHtml(
+        text || '长按识别二维码，关注我们',
+      )}</p></section>`;
+    }
+    if (COMPAT) {
+      // 无图片：微信不渲染 conic-gradient，用纯色虚线占位 + 文案提示
+      const qr = toInlineStyle({
+        width: '120px',
+        height: '120px',
+        lineHeight: '120px',
+        margin: '0 auto 10px',
+        background: '#fff',
+        border: `2px dashed ${primary}`,
+        borderRadius: '8px',
+        color: primary,
+        fontSize: '13px',
+        fontWeight: 700,
+      });
+      return `<section style="${box}"><section style="${qr}">二维码</section><p style="${labelStyle}">${escapeHtml(
+        text || '长按识别二维码，关注我们',
+      )}</p></section>`;
+    }
     const qr = toInlineStyle({
       width: '120px',
       height: '120px',
@@ -699,11 +891,9 @@ function renderWidget(node: PMNode, theme: Theme): string {
       border: '4px solid #fff',
       boxShadow: '0 4px 14px rgba(0,0,0,.12)',
     });
-    return `<section style="${box}"><section style="${qr}"></section><p style="${toInlineStyle({
-      margin: 0,
-      fontWeight: 700,
-      color: theme.base.color,
-    })}">${escapeHtml(text || '长按识别二维码，关注我们')}</p></section>`;
+    return `<section style="${box}"><section style="${qr}"></section><p style="${labelStyle}">${escapeHtml(
+      text || '长按识别二维码，关注我们',
+    )}</p></section>`;
   }
 
   if (variant === 'past') {
@@ -772,14 +962,6 @@ function renderWidget(node: PMNode, theme: Theme): string {
 
   // —— 雷达脉冲（radar）：同心圆向外扩散，科技感“动态图标” ——
   if (variant === 'radar') {
-    const ring = (begin: number) =>
-      `<circle cx="22" cy="22" r="4" fill="none" stroke="${primary}" stroke-width="2" opacity="0">` +
-      `<animate attributeName="r" values="4;21" dur="2s" begin="${begin}s" repeatCount="indefinite"/>` +
-      `<animate attributeName="opacity" values="0.85;0" dur="2s" begin="${begin}s" repeatCount="indefinite"/>` +
-      `</circle>`;
-    const svg = `<svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">${ring(
-      0,
-    )}${ring(1)}<circle cx="22" cy="22" r="3.5" fill="${primary}"/></svg>`;
     const box = toInlineStyle({
       display: 'flex',
       alignItems: 'center',
@@ -790,14 +972,53 @@ function renderWidget(node: PMNode, theme: Theme): string {
       padding: '12px 16px',
       margin: '16px 0',
     });
-    return `<section style="${box}">${svg}<span style="${toInlineStyle({
+    const label = `<span style="${toInlineStyle({
       fontWeight: 600,
       color: theme.base.color,
-    })}">${escapeHtml(text || '持续更新中…')}</span></section>`;
+    })}">${escapeHtml(text || '持续更新中…')}</span>`;
+    if (COMPAT) {
+      // 微信剥离 <svg>，用纯 HTML 实心圆点替代
+      const radarIcon = `<span style="${toInlineStyle({
+        display: 'inline-block',
+        width: '12px',
+        height: '12px',
+        borderRadius: '50%',
+        background: primary,
+        flex: '0 0 auto',
+        marginRight: '4px',
+      })}"></span>`;
+      return `<section style="${box}">${radarIcon}${label}</section>`;
+    }
+    const ring = (begin: number) =>
+      `<circle cx="22" cy="22" r="4" fill="none" stroke="${primary}" stroke-width="2" opacity="0">` +
+      `<animate attributeName="r" values="4;21" dur="2s" begin="${begin}s" repeatCount="indefinite"/>` +
+      `<animate attributeName="opacity" values="0.85;0" dur="2s" begin="${begin}s" repeatCount="indefinite"/>` +
+      `</circle>`;
+    const svg = `<svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">${ring(
+      0,
+    )}${ring(1)}<circle cx="22" cy="22" r="3.5" fill="${primary}"/></svg>`;
+    return `<section style="${box}">${svg}${label}</section>`;
   }
 
   // —— 扫描线（scanline）：HUD 扫描动效，科技感分隔/状态 ——
   if (variant === 'scanline') {
+    const txt = text || 'SCANNING…';
+    if (COMPAT) {
+      // 微信剥离 <svg>，用静态 HUD 框（顶部高亮线）替代
+      const box = toInlineStyle({
+        background: theme.card.background ?? '#fff',
+        border: `1px solid ${primary}55`,
+        borderTop: `3px solid ${primary}`,
+        borderRadius: radius,
+        padding: '14px 16px',
+        margin: '16px 0',
+        textAlign: 'center',
+        fontWeight: 600,
+        color: theme.base.color,
+        letterSpacing: '1px',
+      });
+      return `<section style="${box}">${escapeHtml(txt)}</section>`;
+    }
     const svg = `<svg width="100%" height="48" preserveAspectRatio="none" viewBox="0 0 100 48" xmlns="http://www.w3.org/2000/svg">` +
       `<rect width="100" height="48" fill="${primary}12"/>` +
       `<line x1="0" y1="0" x2="0" y2="48" stroke="${primary}" stroke-width="2">` +
@@ -805,7 +1026,7 @@ function renderWidget(node: PMNode, theme: Theme): string {
       `<animate attributeName="x2" values="0;100;0" dur="2.6s" repeatCount="indefinite"/>` +
       `</line>` +
       `<text x="50" y="29" text-anchor="middle" font-size="13" fill="${theme.base.color}">${escapeHtml(
-        text || 'SCANNING…',
+        txt,
       )}</text></svg>`;
     const box = toInlineStyle({
       background: theme.card.background ?? '#fff',
@@ -819,7 +1040,6 @@ function renderWidget(node: PMNode, theme: Theme): string {
 
   // —— 脉冲点（pulse）：呼吸闪烁的状态点 + 文案 ——
   if (variant === 'pulse') {
-    const dot = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4" fill="${primary}"><animate attributeName="opacity" values="1;0.25;1" dur="1.2s" repeatCount="indefinite"/></circle></svg>`;
     const box = toInlineStyle({
       display: 'flex',
       alignItems: 'center',
@@ -829,6 +1049,12 @@ function renderWidget(node: PMNode, theme: Theme): string {
       color: theme.base.color,
       fontWeight: 600,
     });
+    if (COMPAT) {
+      // 微信剥离 <svg>，用字符圆点替代
+      const dot = `<span style="color:${primary};font-size:14px;line-height:1;">●</span>`;
+      return `<section style="${box}">${dot}<span>${escapeHtml(text || '实时同步')}</span></section>`;
+    }
+    const dot = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4" fill="${primary}"><animate attributeName="opacity" values="1;0.25;1" dur="1.2s" repeatCount="indefinite"/></circle></svg>`;
     return `<section style="${box}">${dot}<span>${escapeHtml(text || '实时同步')}</span></section>`;
   }
 
@@ -925,8 +1151,14 @@ export function renderBlock(node: PMNode, theme: Theme, ctx: Ctx): string {
   }
 }
 
+export interface SerializeOptions {
+  /** 微信/各平台粘贴兼容模式：去除 <svg> 动效、position:absolute、透明渐变字等平台会剥离的写法 */
+  compat?: boolean;
+}
+
 /** 将 ProseMirror JSON 文档序列化为「全内联样式」的 HTML（不含根容器）。 */
-export function serialize(doc: PMNode, theme: Theme): string {
+export function serialize(doc: PMNode, theme: Theme, opts: SerializeOptions = {}): string {
+  COMPAT = !!opts.compat;
   const ctx: Ctx = { hCounters: {} };
   const content = doc.content ?? [];
   return content.map((node) => renderBlock(node, theme, ctx)).join('');

@@ -53,7 +53,28 @@ export function WidgetView({ node, updateAttributes }: NodeViewProps) {
           boxSizing: 'border-box',
         }}
       />
-      <div style={{ fontSize: 11, color: '#9aa0a6', marginTop: 6 }}>动态组件（关注/在看含 SVG 动效，粘贴到微信可保留）</div>
+      {variant === 'qr' && (
+        <input
+          className="nv-input"
+          value={node.attrs.src ?? ''}
+          placeholder="二维码图片 URL（https，留空显示占位框）"
+          onChange={(e) => updateAttributes({ src: e.target.value })}
+          style={{
+            display: 'block',
+            width: '100%',
+            border: '1px solid #e5e7eb',
+            borderRadius: 6,
+            padding: '6px 8px',
+            fontSize: 13,
+            outline: 'none',
+            boxSizing: 'border-box',
+            marginTop: 8,
+          }}
+        />
+      )}
+      <div style={{ fontSize: 11, color: '#9aa0a6', marginTop: 6 }}>
+        动态组件：复制时会自动转为微信兼容写法（SVG 动效降级为静态图标，透明标题回退实色）。
+      </div>
     </NodeViewWrapper>
   );
 }

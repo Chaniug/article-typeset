@@ -10,6 +10,7 @@ export const Widget = Node.create({
     return {
       variant: { default: 'follow' },
       text: { default: '' },
+      src: { default: '' },
     };
   },
   parseHTML() {

@@ -145,3 +145,96 @@ describe('字框与动态组件', () => {
     expect(pulse).toContain('<animate');
   });
 });
+
+describe('微信粘贴兼容模式 (compat)', () => {
+  it('层叠(layered) 去 absolute，改用负 margin 叠放，仍含底纹与标题', () => {
+    const theme = getTheme('wechat-adv-layered')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: '开篇' }] }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).not.toMatch(/position:\s*absolute/);
+    expect(html).toContain('开篇');
+    expect(html).toContain('01');
+  });
+
+  it('竖排(vertical) 退化为普通横向标题，不含 flex 逐字', () => {
+    const theme = getTheme('wechat-adv-vertical')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: '节气' }] }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).not.toMatch(/flex-direction/);
+    expect(html).toContain('节气');
+  });
+
+  it('描边(stroke) 透明字回退实色，不含 transparent', () => {
+    const theme = getTheme('wechat-adv-stroke')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: '夜场' }] }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).not.toContain('transparent');
+    expect(html).toContain('夜场');
+  });
+
+  it('四角框(frame) 去 absolute 角标', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'card', attrs: { variant: 'frame', icon: '◆', title: '要点', body: '框线内容' } }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).not.toMatch(/position:\s*absolute/);
+    expect(html).toContain('要点');
+  });
+
+  it('标签框(tag) 去 absolute 胶囊', () => {
+    const theme = getTheme('wechat-tech-hud')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'card', attrs: { variant: 'tag', icon: '标签', title: 'NOTE', body: '标签框内容' } }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).not.toMatch(/position:\s*absolute/);
+    expect(html).toContain('标签框内容');
+  });
+
+  it('动态组件(follow/like/radar/scanline/pulse) 去 <svg>，仅静态 HTML', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const doc = (variant: string): PMNode => ({
+      type: 'doc',
+      content: [{ type: 'widget', attrs: { variant } }],
+    });
+    for (const v of ['follow', 'like', 'radar', 'scanline', 'pulse']) {
+      const html = serialize(doc(v), theme, { compat: true });
+      expect(html).not.toContain('<svg');
+      expect(html).not.toContain('<animate');
+    }
+  });
+
+  it('二维码(qr) 有 src 时渲染 <img>', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'widget', attrs: { variant: 'qr', src: 'https://example.com/q.png' } }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).toContain('<img');
+    expect(html).toContain('https://example.com/q.png');
+  });
+
+  it('二维码(qr) 无 src 时兼容模式用占位框，不含 conic-gradient', () => {
+    const theme = getTheme('wechat-tech-cyber')!;
+    const html = serialize(
+      { type: 'doc', content: [{ type: 'widget', attrs: { variant: 'qr' } }] },
+      theme,
+      { compat: true },
+    );
+    expect(html).not.toContain('conic-gradient');
+    expect(html).toContain('二维码');
+  });
+});
